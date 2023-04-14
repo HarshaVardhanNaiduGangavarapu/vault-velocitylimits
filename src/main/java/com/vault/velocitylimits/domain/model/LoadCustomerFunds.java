@@ -3,25 +3,22 @@ package com.vault.velocitylimits.domain.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Getter
-@Setter
 /**
  * @author harshavardhannaidugangavarapu
  */
+@Setter
+@Getter
+@NoArgsConstructor
 public class LoadCustomerFunds {
-    @Id
-    @Column
     private Long id;
-    @Column
     private Long customerId;
-    @Column
     private double loadAmount;
-    @Column
     private LocalDateTime time;
 }

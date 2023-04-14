@@ -1,0 +1,4 @@
+com\vault\velocitylimits\domain\service\LoadCustomerFundsService.class
+com\vault\velocitylimits\VelocitylimitsApplication.class
+com\vault\velocitylimits\domain\model\LoadCustomerFunds.class
+com\vault\velocitylimits\domain\repository\LoadCustomerFundsRepository.class
