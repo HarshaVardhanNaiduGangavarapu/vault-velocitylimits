@@ -14,7 +14,7 @@ public class FileWriterUtil {
     public static void writeLoadFundAttemptsToFile(List<LoadFundsAttempt> loadFundsAttemptList) {
         FileOutputStream fileOutputStream = null;
         try {
-            URL url = FileWriterUtil.class.getClass().getResource("output.txt");
+            URL url = FileWriterUtil.class.getClassLoader().getResource("output.txt");
             File outputFile = new File(url.getPath());
             fileOutputStream = new FileOutputStream(outputFile);
             for (LoadFundsAttempt loadFundsAttempt : loadFundsAttemptList) {

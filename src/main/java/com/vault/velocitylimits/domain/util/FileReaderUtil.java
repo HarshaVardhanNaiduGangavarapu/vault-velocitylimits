@@ -18,8 +18,8 @@ public class FileReaderUtil {
 
     public static List<String> readCustomerLoadFundsFromInputFile() {
         try {
-            URL inputFileURl = FileReaderUtil.class.getClass().getResource("input.txt");
-            File file = new File(inputFileURl.getFile());
+            URL inputFileURL = FileReaderUtil.class.getClassLoader().getResource("input.txt");
+            File file = new File(inputFileURL.getFile());
             return FileUtils.readLines(file);
         } catch (IOException e) {
             throw new RuntimeException(e);

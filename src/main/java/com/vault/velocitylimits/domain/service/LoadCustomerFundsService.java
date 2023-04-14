@@ -1,12 +1,13 @@
 package com.vault.velocitylimits.domain.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vault.velocitylimits.domain.model.LoadCustomerFunds;
 import com.vault.velocitylimits.domain.model.LoadFundsAttempt;
 import com.vault.velocitylimits.domain.repository.ILoadCustomerFundsRepository;
 import com.vault.velocitylimits.domain.repository.LoadCustomerFundsEntity;
 import com.vault.velocitylimits.domain.util.FileReaderUtil;
 import com.vault.velocitylimits.domain.util.FileWriterUtil;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
 @Service
 public class LoadCustomerFundsService {
     private ILoadCustomerFundsRepository loadCustomerFundsRepository;
-    private ModelMapper modelMapper;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public LoadCustomerFundsService(ILoadCustomerFundsRepository loadCustomerFundsRepository, ModelMapper modelMapper) {
+    public LoadCustomerFundsService(ILoadCustomerFundsRepository loadCustomerFundsRepository, ObjectMapper objectMapper) {
         this.loadCustomerFundsRepository = loadCustomerFundsRepository;
-        this.modelMapper = modelMapper;
+        this.objectMapper = objectMapper;
     }
 
     public LoadCustomerFundsService() {
@@ -51,9 +51,9 @@ public class LoadCustomerFundsService {
     private LoadFundsAttempt verifyVelocityLimits(LoadCustomerFunds loadCustomerFund) {
        boolean isLoadInlineWithVelocityLimits= verifyCustomerMaxLoadAmountLimitPerDay(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime())
                && verifyCustomerNoOfLoadsInAWeek(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime());
-        LoadFundsAttempt loadFundsAttempt = modelMapper.map(loadCustomerFund, LoadFundsAttempt.class);
+        LoadFundsAttempt loadFundsAttempt = objectMapper.convertValue(loadCustomerFund, LoadFundsAttempt.class);
        if(isLoadInlineWithVelocityLimits){
-           LoadCustomerFundsEntity loadCustomerFundsEntity = modelMapper.map(loadCustomerFund, LoadCustomerFundsEntity.class);
+           LoadCustomerFundsEntity loadCustomerFundsEntity = objectMapper.convertValue(loadCustomerFund, LoadCustomerFundsEntity.class);
            loadCustomerFundsRepository.save(loadCustomerFundsEntity);
            loadFundsAttempt.setAccepted(true);
        }else{
@@ -95,12 +95,19 @@ public class LoadCustomerFundsService {
     private List<LoadCustomerFunds> getCustomerLoadFundsData() {
         List<String> inputFileLinesList = FileReaderUtil.readCustomerLoadFundsFromInputFile();
         return inputFileLinesList.stream().map(
-                loadFundJsonTxt -> modelMapper.map(loadFundJsonTxt, LoadCustomerFunds.class)
+                loadFundJsonTxt -> {
+                    try {
+                        return objectMapper.readValue(loadFundJsonTxt, LoadCustomerFunds.class);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
         ).collect(Collectors.toList());
     }
 
+     /*
     public static void main(String[] args) {
-        LocalDate localDate = LocalDate.parse("2000-01-01T00:00:00Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+       LocalDate localDate = LocalDate.parse("2000-01-01T00:00:00Z", DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
         LocalDate monday = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate sunday = localDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         LocalDateTime startDate = LocalDateTime.of(localDate, LocalTime.MIN.truncatedTo(ChronoUnit.SECONDS));
@@ -112,5 +119,5 @@ public class LoadCustomerFundsService {
         System.out.println("WeekStart: "+weekStart);
         System.out.println("WeekEnd: "+weekEnd);
     }
-
+*/
 }
