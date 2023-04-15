@@ -1,5 +1,7 @@
 package com.vault.velocitylimits.domain.repository;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -8,7 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "LoadedCustomerFunds")
 @Getter
 @Setter
 /**
@@ -19,8 +21,10 @@ public class LoadCustomerFundsEntity {
     @Column
     private Long id;
     @Column
+    @JsonProperty("customer_id")
     private Long customerId;
     @Column
+    @JsonProperty("load_amount")
     private double loadAmount;
     @Column
     private LocalDateTime time;

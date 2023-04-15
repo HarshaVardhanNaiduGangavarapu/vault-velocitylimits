@@ -49,12 +49,12 @@ public class LoadCustomerFundsService {
     }
 
     private LoadFundsAttempt verifyVelocityLimits(LoadCustomerFunds loadCustomerFund) {
-       boolean isLoadInlineWithVelocityLimits= verifyCustomerMaxLoadAmountLimitPerDay(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime())
-               && verifyCustomerNoOfLoadsInAWeek(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime());
+       boolean isLoadInlineWithVelocityLimits= verifyCustomerMaxLoadAmountLimitPerDay(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime(), loadCustomerFund.getLoadAmount())
+               && verifyCustomerNoOfLoadsInAWeek(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime(), loadCustomerFund.getLoadAmount());
         LoadFundsAttempt loadFundsAttempt = objectMapper.convertValue(loadCustomerFund, LoadFundsAttempt.class);
        if(isLoadInlineWithVelocityLimits){
            LoadCustomerFundsEntity loadCustomerFundsEntity = objectMapper.convertValue(loadCustomerFund, LoadCustomerFundsEntity.class);
-           loadCustomerFundsRepository.save(loadCustomerFundsEntity);
+           loadCustomerFundsRepository.saveAndFlush(loadCustomerFundsEntity);
            loadFundsAttempt.setAccepted(true);
        }else{
            //log
@@ -63,33 +63,33 @@ public class LoadCustomerFundsService {
        return loadFundsAttempt;
     }
 
-    public boolean verifyCustomerMaxLoadAmountLimitPerDay(Long customerId, LocalDateTime time) {
+    public boolean verifyCustomerMaxLoadAmountLimitPerDay(Long customerId, LocalDateTime time, double loadAmount) {
         LocalDate localDate = time.toLocalDate();
         LocalDateTime startDate = LocalDateTime.of(localDate, LocalTime.MIN.truncatedTo(ChronoUnit.SECONDS));
         LocalDateTime endDate = LocalDateTime.of(localDate, LocalTime.MAX.truncatedTo(ChronoUnit.SECONDS));
-        List<LoadCustomerFunds> customerPreviousLoadsInADayList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, startDate, endDate);
+        List<LoadCustomerFundsEntity> customerPreviousLoadsInADayList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, startDate, endDate);
         if(customerPreviousLoadsInADayList.size()>3){
             return false;
         }
         double totalLoadInADay = 0.0;
-        for(LoadCustomerFunds customerFunds: customerPreviousLoadsInADayList){
+        for(LoadCustomerFundsEntity customerFunds: customerPreviousLoadsInADayList){
             totalLoadInADay+= customerFunds.getLoadAmount();
         }
-        return totalLoadInADay<=5000;
+        return totalLoadInADay+loadAmount<=5000;
     }
 
-    public boolean verifyCustomerNoOfLoadsInAWeek(Long customerId, LocalDateTime time){
+    public boolean verifyCustomerNoOfLoadsInAWeek(Long customerId, LocalDateTime time, double loadAmount){
         LocalDate localDate = time.toLocalDate();
         LocalDate monday = localDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         LocalDate sunday = localDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
         LocalDateTime weekStart = LocalDateTime.of(monday, LocalTime.MIN.truncatedTo(ChronoUnit.SECONDS));
         LocalDateTime weekEnd = LocalDateTime.of(sunday, LocalTime.MAX.truncatedTo(ChronoUnit.SECONDS));
-        List<LoadCustomerFunds> loadCustomerFundsWeekList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, weekStart, weekEnd);
+        List<LoadCustomerFundsEntity> loadCustomerFundsWeekList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, weekStart, weekEnd);
         double totalLoadInAWeek = 0.0;
-        for(LoadCustomerFunds customerFunds: loadCustomerFundsWeekList){
+        for(LoadCustomerFundsEntity customerFunds: loadCustomerFundsWeekList){
             totalLoadInAWeek+= customerFunds.getLoadAmount();
         }
-        return totalLoadInAWeek<=20000;
+        return totalLoadInAWeek+loadAmount<=20000;
     }
 
     private List<LoadCustomerFunds> getCustomerLoadFundsData() {
