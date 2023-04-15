@@ -1,6 +1,5 @@
 package com.vault.velocitylimits.domain.repository;
 
-import com.vault.velocitylimits.domain.model.LoadCustomerFunds;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,6 @@
 package com.vault.velocitylimits.domain.util;
 
-import com.vault.velocitylimits.domain.model.LoadCustomerFunds;
+import com.vault.velocitylimits.domain.service.LoadFundsException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -16,13 +16,13 @@ public class FileReaderUtil {
     private FileReaderUtil() {
     }
 
-    public static List<String> readCustomerLoadFundsFromInputFile() {
+    public static List<String> readCustomerLoadFundsFromInputFile(String fileName) {
         try {
-            URL inputFileURL = FileReaderUtil.class.getClassLoader().getResource("input.txt");
+            URL inputFileURL = FileReaderUtil.class.getClassLoader().getResource(fileName);
             File file = new File(inputFileURL.getFile());
             return FileUtils.readLines(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ex) {
+            throw new LoadFundsException("Failed to read load funds transactions data."+ ex.getMessage());
         }
     }
 }
