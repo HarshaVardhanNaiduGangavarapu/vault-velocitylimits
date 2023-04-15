@@ -18,8 +18,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.vault.velocitylimits.domain.util.FileWriterUtil.SLASH;
 
 /**
  * @author harshagangavarapu
@@ -42,7 +46,7 @@ public class LoadFundsService implements ILoadFundsService {
                             @Value("${velocitylimits.perweek.fund.limit}") int VELOCITY_LIMITS_PER_WEEK_FUND,
                             @Value("${load.funds.input.file}") String INPUT_FILE,
                             @Value("${load.funds.output.file}") String OUTPUT_FILE
-                            ) {
+    ) {
         this.loadCustomerFundsRepository = loadCustomerFundsRepository;
         this.objectMapper = objectMapper;
         this.VELOCITY_LIMITS_PER_DAY_FUND = VELOCITY_LIMITS_PER_DAY_FUND;
@@ -54,12 +58,12 @@ public class LoadFundsService implements ILoadFundsService {
 
     public void executeFundsLoadingToAccounts() {
         // read transactions data
-        List<LoadFunds> loadFundsJSONList = readLoadFundTransactionData();
+        List<LoadFunds> loadFundsList = readLoadFundTransactionData();
 
         // Iterate and verify velocity limits
         List<LoadFundsAttempt> loadFundsAttemptList = new ArrayList<>();
-        for(LoadFunds loadCustomerFund: loadFundsJSONList){
-            LoadFundsAttempt loadFundsAttempt = verifyVelocityLimits(loadCustomerFund);
+        for (LoadFunds loadFund : loadFundsList) {
+            LoadFundsAttempt loadFundsAttempt = verifyVelocityLimits(loadFund);
             loadFundsAttemptList.add(loadFundsAttempt);
         }
         // write the fund loading attempts info into output file
@@ -76,7 +80,7 @@ public class LoadFundsService implements ILoadFundsService {
      */
     private LoadFundsAttempt verifyVelocityLimits(LoadFunds loadCustomerFund) {
         LoadFundsAttempt loadFundsAttempt = objectMapper.convertValue(loadCustomerFund, LoadFundsAttempt.class);
-        try{
+        try {
             // verify velocity limits
             verifyCustomerMaxLoadAmountLimitPerDay(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime(), loadCustomerFund.getLoadAmount());
             verifyCustomerNoOfLoadsInAWeek(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime(), loadCustomerFund.getLoadAmount());
@@ -85,8 +89,7 @@ public class LoadFundsService implements ILoadFundsService {
             LoadedCustomerFundsEntity loadedCustomerFundsEntity = objectMapper.convertValue(loadCustomerFund, LoadedCustomerFundsEntity.class);
             loadCustomerFundsRepository.saveAndFlush(loadedCustomerFundsEntity);
             loadFundsAttempt.setAccepted(true);
-        }
-        catch(VelocityLimitException vle){
+        } catch (VelocityLimitException vle) {
             loadFundsAttempt.setAccepted(false);
         }
         return loadFundsAttempt;
@@ -94,8 +97,8 @@ public class LoadFundsService implements ILoadFundsService {
 
     /**
      * This method verifies each load fund transaction satisfies the following velocity limits conditions: <p>
-     *     1. A maximum of $5000 per day for each customer account. <p>
-     *     2. A maximum of 3 load transaction per day for each customer account. <p>
+     * 1. A maximum of $5000 per day for each customer account. <p>
+     * 2. A maximum of 3 load transaction per day for each customer account. <p>
      *
      * @param customerId
      * @param loadTime
@@ -120,7 +123,8 @@ public class LoadFundsService implements ILoadFundsService {
 
     /**
      * This method verifies each load fund transaction satisfies the following velocity limits conditions: <p>
-     *     1. A maximum of $20,000 per week for each customer account. <p>
+     * 1. A maximum of $20,000 per week for each customer account. <p>
+     *
      * @param customerId
      * @param loadTime
      * @param loadAmount
@@ -131,22 +135,23 @@ public class LoadFundsService implements ILoadFundsService {
         LocalDateTime weekEnd = DateTimeUtil.getEndOfWeek(loadTime);
         List<LoadedCustomerFundsEntity> loadCustomerFundsWeekList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, weekStart, weekEnd);
         double totalLoadInAWeek = 0.0;
-        for(LoadedCustomerFundsEntity customerFunds: loadCustomerFundsWeekList){
-            totalLoadInAWeek+= customerFunds.getLoadAmount();
+        for (LoadedCustomerFundsEntity customerFunds : loadCustomerFundsWeekList) {
+            totalLoadInAWeek += customerFunds.getLoadAmount();
         }
-        if( totalLoadInAWeek+loadAmount>VELOCITY_LIMITS_PER_WEEK_FUND){
+        if (totalLoadInAWeek + loadAmount > VELOCITY_LIMITS_PER_WEEK_FUND) {
             throw new VelocityLimitException("Fund Load Amount Limit per week exceeded.");
         }
     }
 
     /**
      * This method read the `input.txt` load funds transactions data file utilizing `FileReaderUtil` and reads each of the
-     * string data into `LoadCustomerFunds` POJO.
+     * string data into `LoadCustomerFunds` POJO by filtering only the first occurrence of CustomerId and LoadId.
      *
      * @return List<LoadCustomerFunds>
      */
     private List<LoadFunds> readLoadFundTransactionData() {
         List<String> inputFileLinesList = FileReaderUtil.readCustomerLoadFundsFromInputFile(INPUT_FILE);
+        Set<String> customerLoadIdsSet = new HashSet<>();
         return inputFileLinesList.stream().map(
                 loadFundJsonTxt -> {
                     try {
@@ -155,6 +160,6 @@ public class LoadFundsService implements ILoadFundsService {
                         throw new LoadFundsException("Unable to read transaction text into an object." + jpe.getMessage());
                     }
                 }
-        ).collect(Collectors.toList());
+        ).filter(loadFunds -> customerLoadIdsSet.add(loadFunds.getCustomerId() + SLASH + loadFunds.getId())).collect(Collectors.toList());
     }
 }

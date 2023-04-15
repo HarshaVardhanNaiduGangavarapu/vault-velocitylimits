@@ -12,7 +12,7 @@ import java.util.List;
 
 public class FileWriterUtil {
     private static final String PERIOD = ".";
-    private static final String SLASH = "/";
+    public static final String SLASH = "/";
     private static final String NEW_LINE="\n";
     private static ObjectMapper objectMapper = new ObjectMapper();
 

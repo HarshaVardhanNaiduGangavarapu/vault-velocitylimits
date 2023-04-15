@@ -2,7 +2,10 @@ package com.vault.velocitylimits.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Setter;
+import lombok.Getter;
+import lombok.Data;
+import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
 
