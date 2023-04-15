@@ -3,7 +3,7 @@ package com.vault.velocitylimits.domain.service;
 /**
  * @author harshagangavarapu
  */
-public interface ILoadCustomerFundsService {
+public interface ILoadFundsService {
 
     /**
      * This method handles the loading funds into customer accounts by reading `input.txt` which contains

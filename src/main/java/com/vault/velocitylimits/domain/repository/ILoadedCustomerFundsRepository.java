@@ -12,7 +12,7 @@ import java.util.List;
  * @author harshavardhannaidugangavarapu
  */
 @Repository
-public interface ILoadCustomerFundsRepository extends JpaRepository<LoadCustomerFundsEntity, Long> {
+public interface ILoadedCustomerFundsRepository extends JpaRepository<LoadedCustomerFundsEntity, Long> {
     @Query(value = "from LoadedCustomerFunds lcf where lcf.customerId=:customerId AND lcf.time>= :startDate AND lcf.time<=:endDate")
-    List<LoadCustomerFundsEntity> findAllByCustomerIdAndTimeBetween(@Param("customerId") Long customerId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    List<LoadedCustomerFundsEntity> findAllByCustomerIdAndTimeBetween(@Param("customerId") Long customerId, @Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LoadCustomerFunds {
+public class LoadFunds {
     private Long id;
     @JsonProperty("customer_id")
     private Long customerId;
