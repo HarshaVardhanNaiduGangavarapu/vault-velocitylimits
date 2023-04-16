@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * @author harshavardhannaidugangavarapu
+ * @author harshagangavarapu
  */
 @Repository
 public interface ILoadedCustomerFundsRepository extends JpaRepository<LoadedCustomerFundsEntity, Long> {

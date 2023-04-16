@@ -11,7 +11,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * @author harshavardhannaidugangavarapu
+ * @author harshagangavarapu
  */
 public class FileReaderUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileReaderUtil.class);
