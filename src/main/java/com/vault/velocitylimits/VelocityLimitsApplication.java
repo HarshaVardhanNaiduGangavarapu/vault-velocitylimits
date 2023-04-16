@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Configuration;
 public class VelocityLimitsApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(VelocityLimitsApplication.class, args);
+        // execute fund loading
         context.getBean(LoadFundsService.class).executeFundsLoadingToAccounts();
     }
 }
