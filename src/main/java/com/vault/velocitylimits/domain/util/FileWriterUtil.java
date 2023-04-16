@@ -23,6 +23,10 @@ public class FileWriterUtil {
     private static final String NEW_LINE = "\n";
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    // prevent initialization
+    private FileWriterUtil() {
+    }
+
     /**
      * This method writes the content of the list into the given fileName under resource folder.
      *

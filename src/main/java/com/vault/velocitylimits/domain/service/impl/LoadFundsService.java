@@ -156,9 +156,9 @@ public class LoadFundsService implements ILoadFundsService {
 
     /**
      * This method read the `input.txt` load funds transactions data file utilizing `FileReaderUtil` and reads each of the
-     * string data into `LoadCustomerFunds` POJO by filtering only the first occurrence of CustomerId and LoadId.
+     * string data into `LoadFunds` POJO by filtering only the first occurrence of CustomerId and LoadId.
      *
-     * @return List<LoadCustomerFunds>
+     * @return List<LoadFunds>
      */
     private List<LoadFunds> readLoadFundTransactionData() {
         LOGGER.info("Reading and converting load funds transactions data.");
