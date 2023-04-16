@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonPropertyOrder({ "id", "customer_id", "accepted" })
+@JsonPropertyOrder({"id", "customer_id", "accepted"})
 public class LoadFundsAttempt {
     private String id;
     @JsonProperty("customer_id")

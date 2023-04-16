@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
  * @author harshagangavarapu
  */
 public class LoadFundsDeserializer extends StdDeserializer<LoadFunds> {
+    private String UTC_DATE_FORMAT="yyyy-MM-dd'T'HH:mm:ss'Z'";
     public LoadFundsDeserializer() {
        this(null);
     }
@@ -21,16 +22,14 @@ public class LoadFundsDeserializer extends StdDeserializer<LoadFunds> {
         super(vc);
     }
 
-
     @Override
     public LoadFunds deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
         Long id = node.get("id").asLong();
         Long customerId = node.get("customer_id").asLong();
         Double loadAmount = Double.valueOf(node.get("load_amount").asText().substring(1));
-        LocalDateTime loadTime = LocalDateTime.parse(node.get("time").asText(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+        LocalDateTime loadTime = LocalDateTime.parse(node.get("time").asText(), DateTimeFormatter.ofPattern(UTC_DATE_FORMAT));
 
         return new LoadFunds(id,customerId,loadAmount,loadTime);
-
     }
 }

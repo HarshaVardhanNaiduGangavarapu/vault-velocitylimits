@@ -22,10 +22,16 @@ public class FileWriterUtil {
     private static final String NEW_LINE = "\n";
     private static ObjectMapper objectMapper = new ObjectMapper();
 
+    /**
+     * This method wtites the content of the list into the given fileName under resource folder.
+     *
+     * @param fileName
+     * @param loadFundsAttemptList
+     */
     public static void writeLoadFundAttemptsToFile(String fileName, List<LoadFundsAttempt> loadFundsAttemptList) {
         FileOutputStream fileOutputStream = null;
         try {
-            LOGGER.info("Writing load funds transaction attempts into file with fileName: "+fileName);
+            LOGGER.info("Writing load funds transaction attempts into file with fileName: " + fileName);
             File outputFile = new File(FileWriterUtil.class.getClassLoader().getResource(PERIOD).getFile() + SLASH + fileName);
             fileOutputStream = new FileOutputStream(outputFile);
             for (LoadFundsAttempt loadFundsAttempt : loadFundsAttemptList) {

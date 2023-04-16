@@ -5,7 +5,10 @@ import com.vault.velocitylimits.domain.repository.ILoadedCustomerFundsRepository
 import com.vault.velocitylimits.domain.repository.LoadedCustomerFundsEntity;
 import com.vault.velocitylimits.domain.service.VelocityLimitException;
 import com.vault.velocitylimits.domain.service.impl.LoadFundsService;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +45,7 @@ class VelocityLimitConditionsTests {
     private ILoadedCustomerFundsRepository loadedCustomerFundsRepository;
     @Mock
     private ObjectMapper objectMapper;
-    private static final DateTimeFormatter DATE_FORMATTER_UTC =DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final DateTimeFormatter DATE_FORMATTER_UTC = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     @BeforeEach
     public void setup() {
@@ -87,7 +90,7 @@ class VelocityLimitConditionsTests {
         Mockito.doReturn(loadedCustomerFundsEntityList).when(loadedCustomerFundsRepository).findAllByCustomerIdAndTimeBetween(any(), any(), any());
 
         // execute and verify
-        Assertions.assertDoesNotThrow( () -> loadFundsService.verifyCustomerMaxLoadAmountLimitPerDay(3L, LocalDateTime.now(), 400),
+        Assertions.assertDoesNotThrow(() -> loadFundsService.verifyCustomerMaxLoadAmountLimitPerDay(3L, LocalDateTime.now(), 400),
                 "Fund Load Transactions Limit per Day exceeded.");
     }
 
@@ -108,7 +111,7 @@ class VelocityLimitConditionsTests {
 
     @Test
     @DisplayName("Test valid load fund attempts per week inline with velocity limits")
-    public void testValidLoadFundsPerWeek(){
+    public void testValidLoadFundsPerWeek() {
         // setup
         List<LoadedCustomerFundsEntity> loadedCustomerFundsEntityList = new ArrayList<>();
         loadedCustomerFundsEntityList.add(new LoadedCustomerFundsEntity(1L, 3L, 10000, LocalDateTime.parse("2023-04-10T13:45:18Z", DATE_FORMATTER_UTC)));
@@ -117,12 +120,12 @@ class VelocityLimitConditionsTests {
         Mockito.doReturn(loadedCustomerFundsEntityList).when(loadedCustomerFundsRepository).findAllByCustomerIdAndTimeBetween(eq(3L), any(), any());
 
         // execute and verify
-        Assertions.assertDoesNotThrow(()->loadFundsService.verifyCustomerNoOfLoadsInAWeek(3L,LocalDateTime.parse("2023-04-14T13:45:18Z", DATE_FORMATTER_UTC),2500),"Fund Load Amount Limit per week exceeded.");
+        Assertions.assertDoesNotThrow(() -> loadFundsService.verifyCustomerNoOfLoadsInAWeek(3L, LocalDateTime.parse("2023-04-14T13:45:18Z", DATE_FORMATTER_UTC), 2500), "Fund Load Amount Limit per week exceeded.");
     }
 
     @Test
     @DisplayName("Test Invalid load fund attempts per week not inline with velocity limits")
-    public void testInValidLoadFundsPerWeek(){
+    public void testInValidLoadFundsPerWeek() {
         // setup
         List<LoadedCustomerFundsEntity> loadedCustomerFundsEntityList = new ArrayList<>();
         loadedCustomerFundsEntityList.add(new LoadedCustomerFundsEntity(1L, 3L, 10000, LocalDateTime.parse("2023-04-10T13:45:18Z", DATE_FORMATTER_UTC)));
@@ -131,7 +134,6 @@ class VelocityLimitConditionsTests {
         Mockito.doReturn(loadedCustomerFundsEntityList).when(loadedCustomerFundsRepository).findAllByCustomerIdAndTimeBetween(eq(3L), any(), any());
 
         // execute and verify
-        Assertions.assertThrows(VelocityLimitException.class, ()->loadFundsService.verifyCustomerNoOfLoadsInAWeek(3L,LocalDateTime.parse("2023-04-14T13:45:18Z", DATE_FORMATTER_UTC),2500),"Fund Load Amount Limit per week exceeded.");
+        Assertions.assertThrows(VelocityLimitException.class, () -> loadFundsService.verifyCustomerNoOfLoadsInAWeek(3L, LocalDateTime.parse("2023-04-14T13:45:18Z", DATE_FORMATTER_UTC), 2500), "Fund Load Amount Limit per week exceeded.");
     }
-
 }

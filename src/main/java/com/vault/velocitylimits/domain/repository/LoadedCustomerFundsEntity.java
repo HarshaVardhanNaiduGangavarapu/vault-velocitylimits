@@ -11,14 +11,15 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "LoadedCustomerFunds")
+/**
+ * @author harshagangavarapu
+ */
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-/**
- * @author harshavardhannaidugangavarapu
- */
+@Entity(name = "LoadedCustomerFunds")
 public class LoadedCustomerFundsEntity {
     @Id
     @Column

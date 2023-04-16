@@ -31,7 +31,7 @@ public class LoadServiceE2ETest {
     public void testLoadFundsEndToEnd() throws IOException {
         // setup
         File expectedFile = new File(this.getClass().getClassLoader().getResource(expectedOutputFile).getFile());
-        String expectedOutput = FileUtils.readFileToString(expectedFile).replace("\r\n","\n");
+        String expectedOutput = FileUtils.readFileToString(expectedFile).replace("\r\n", "\n");
 
         // execute
         loadFundsService.executeFundsLoadingToAccounts();

@@ -20,6 +20,12 @@ public class FileReaderUtil {
     private FileReaderUtil() {
     }
 
+    /**
+     * This method read the contents of the given fileName present in resources folder and return list of file lines.
+     *
+     * @param fileName
+     * @return List
+     */
     public static List<String> readCustomerLoadFundsFromInputFile(String fileName) {
         LOGGER.info("Reading load funds transactions data from input file: {}", fileName);
         try {
@@ -28,7 +34,7 @@ public class FileReaderUtil {
             return FileUtils.readLines(file);
         } catch (IOException ex) {
             LOGGER.error("Failed to read load funds transactions data from input file: {}", fileName);
-            throw new LoadFundsException("Failed to read load funds transactions data."+ ex.getMessage());
+            throw new LoadFundsException("Failed to read load funds transactions data." + ex.getMessage());
         }
     }
 }

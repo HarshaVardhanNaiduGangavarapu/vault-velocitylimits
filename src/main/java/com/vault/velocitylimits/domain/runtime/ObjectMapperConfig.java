@@ -16,12 +16,15 @@ public class ObjectMapperConfig {
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        SimpleModule module = new SimpleModule();
-        module.addDeserializer(LoadFunds.class, new LoadFundsDeserializer());
 
+        // register LoadFunds deserialize with mapper
+        SimpleModule loadFundModule = new SimpleModule();
+        loadFundModule.addDeserializer(LoadFunds.class, new LoadFundsDeserializer());
+        objectMapper.registerModule(loadFundModule);
+
+        // register time module for accurate serialization and deserialization
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        objectMapper.registerModule(module);
         return objectMapper;
     }
 }
