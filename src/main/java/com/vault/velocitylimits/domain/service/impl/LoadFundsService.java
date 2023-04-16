@@ -12,6 +12,8 @@ import com.vault.velocitylimits.domain.service.VelocityLimitException;
 import com.vault.velocitylimits.domain.util.DateTimeUtil;
 import com.vault.velocitylimits.domain.util.FileReaderUtil;
 import com.vault.velocitylimits.domain.util.FileWriterUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ import static com.vault.velocitylimits.domain.util.FileWriterUtil.SLASH;
  */
 @Service
 public class LoadFundsService implements ILoadFundsService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoadFundsService.class);
     private double VELOCITY_LIMITS_PER_DAY_FUND;
     private int VELOCITY_LIMITS_PER_DAY_TRANSACTIONS_LIMIT;
     private int VELOCITY_LIMITS_PER_WEEK_FUND;
@@ -57,11 +60,13 @@ public class LoadFundsService implements ILoadFundsService {
     }
 
     public void executeFundsLoadingToAccounts() {
+        LOGGER.info("Started executing fund loading into accounts.");
         // read transactions data
         List<LoadFunds> loadFundsList = readLoadFundTransactionData();
 
         // Iterate and verify velocity limits
         List<LoadFundsAttempt> loadFundsAttemptList = new ArrayList<>();
+        LOGGER.info("Verifying velocity limits for loads funds transactions data of size: {}", loadFundsList.size());
         for (LoadFunds loadFund : loadFundsList) {
             LoadFundsAttempt loadFundsAttempt = verifyVelocityLimits(loadFund);
             loadFundsAttemptList.add(loadFundsAttempt);
@@ -85,12 +90,14 @@ public class LoadFundsService implements ILoadFundsService {
             verifyCustomerMaxLoadAmountLimitPerDay(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime(), loadCustomerFund.getLoadAmount());
             verifyCustomerNoOfLoadsInAWeek(loadCustomerFund.getCustomerId(), loadCustomerFund.getTime(), loadCustomerFund.getLoadAmount());
 
-            // save load fund transaction in DB
+            // save loaded fund transaction in DB
             LoadedCustomerFundsEntity loadedCustomerFundsEntity = objectMapper.convertValue(loadCustomerFund, LoadedCustomerFundsEntity.class);
-            loadCustomerFundsRepository.saveAndFlush(loadedCustomerFundsEntity);
+            loadCustomerFundsRepository.save(loadedCustomerFundsEntity);
             loadFundsAttempt.setAccepted(true);
+            LOGGER.info("Load fund transaction with id: {} has been accepted.", loadCustomerFund.getId());
         } catch (VelocityLimitException vle) {
             loadFundsAttempt.setAccepted(false);
+            LOGGER.info("Load fund transaction with id: {} has been rejected.", loadCustomerFund.getId());
         }
         return loadFundsAttempt;
     }
@@ -110,6 +117,7 @@ public class LoadFundsService implements ILoadFundsService {
         LocalDateTime endDate = DateTimeUtil.getEndOfDay(loadTime);
         List<LoadedCustomerFundsEntity> customerPreviousLoadsInADayList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, startDate, endDate);
         if (customerPreviousLoadsInADayList.size() >= VELOCITY_LIMITS_PER_DAY_TRANSACTIONS_LIMIT) {
+            LOGGER.error("Fund Load Transactions Limit per Day exceeded for customerId: {}", customerId);
             throw new VelocityLimitException("Fund Load Transactions Limit per Day exceeded.");
         }
         double totalLoadInADay = 0.0;
@@ -117,6 +125,7 @@ public class LoadFundsService implements ILoadFundsService {
             totalLoadInADay += customerFunds.getLoadAmount();
         }
         if (totalLoadInADay + loadAmount > VELOCITY_LIMITS_PER_DAY_FUND) {
+            LOGGER.error("Fund Load Amount Limit per Day exceeded for customerId: {}", customerId);
             throw new VelocityLimitException("Fund Load Amount Limit per Day exceeded.");
         }
     }
@@ -133,12 +142,14 @@ public class LoadFundsService implements ILoadFundsService {
     public void verifyCustomerNoOfLoadsInAWeek(Long customerId, LocalDateTime loadTime, double loadAmount) throws VelocityLimitException {
         LocalDateTime weekStart = DateTimeUtil.getStartOfWeek(loadTime);
         LocalDateTime weekEnd = DateTimeUtil.getEndOfWeek(loadTime);
-        List<LoadedCustomerFundsEntity> loadCustomerFundsWeekList = loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, weekStart, weekEnd);
+        List<LoadedCustomerFundsEntity> loadCustomerFundsWeekList =
+                loadCustomerFundsRepository.findAllByCustomerIdAndTimeBetween(customerId, weekStart, weekEnd);
         double totalLoadInAWeek = 0.0;
         for (LoadedCustomerFundsEntity customerFunds : loadCustomerFundsWeekList) {
             totalLoadInAWeek += customerFunds.getLoadAmount();
         }
         if (totalLoadInAWeek + loadAmount > VELOCITY_LIMITS_PER_WEEK_FUND) {
+            LOGGER.error("Fund Load Amount Limit per week exceeded for customerId: {}", customerId);
             throw new VelocityLimitException("Fund Load Amount Limit per week exceeded.");
         }
     }
@@ -150,6 +161,7 @@ public class LoadFundsService implements ILoadFundsService {
      * @return List<LoadCustomerFunds>
      */
     private List<LoadFunds> readLoadFundTransactionData() {
+        LOGGER.info("Reading and converting load funds transactions data.");
         List<String> inputFileLinesList = FileReaderUtil.readCustomerLoadFundsFromInputFile(INPUT_FILE);
         Set<String> customerLoadIdsSet = new HashSet<>();
         return inputFileLinesList.stream().map(
@@ -157,6 +169,7 @@ public class LoadFundsService implements ILoadFundsService {
                     try {
                         return objectMapper.readValue(loadFundJsonTxt, LoadFunds.class);
                     } catch (JsonProcessingException jpe) {
+                        LOGGER.error("Failed to readValue into LoadFunds object for following data: {}", loadFundJsonTxt);
                         throw new LoadFundsException("Unable to read transaction text into an object." + jpe.getMessage());
                     }
                 }
