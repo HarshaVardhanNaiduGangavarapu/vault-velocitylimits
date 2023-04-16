@@ -1,5 +1,6 @@
 package com.vault.velocitylimits.domain.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vault.velocitylimits.domain.model.LoadFundsAttempt;
 import com.vault.velocitylimits.domain.service.LoadFundsException;
@@ -23,7 +24,7 @@ public class FileWriterUtil {
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * This method wtites the content of the list into the given fileName under resource folder.
+     * This method writes the content of the list into the given fileName under resource folder.
      *
      * @param fileName
      * @param loadFundsAttemptList
@@ -35,7 +36,7 @@ public class FileWriterUtil {
             File outputFile = new File(FileWriterUtil.class.getClassLoader().getResource(PERIOD).getFile() + SLASH + fileName);
             fileOutputStream = new FileOutputStream(outputFile);
             for (LoadFundsAttempt loadFundsAttempt : loadFundsAttemptList) {
-                fileOutputStream.write(objectMapper.writeValueAsString(loadFundsAttempt).getBytes());
+                fileOutputStream.write(getJSONStringFromObj(loadFundsAttempt).getBytes());
                 fileOutputStream.write(NEW_LINE.getBytes());
             }
         } catch (IOException ex) {
@@ -43,6 +44,21 @@ public class FileWriterUtil {
             throw new LoadFundsException("Failed to write load funds transaction attempts info to file." + ex.getMessage());
         } finally {
             IOUtils.closeQuietly(fileOutputStream);
+        }
+    }
+
+    /**
+     * This method converts the object value into a JSON string
+     *
+     * @param objectValue
+     * @return String
+     */
+    public static String getJSONStringFromObj(Object objectValue) {
+        try {
+            return objectMapper.writeValueAsString(objectValue);
+        } catch (JsonProcessingException jpe) {
+            LOGGER.error("Failed to convert object value to JSON String.", jpe);
+            throw new LoadFundsException("Failed to convert object value to JSON String." + jpe.getMessage());
         }
     }
 }

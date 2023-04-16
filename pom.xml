@@ -12,7 +12,7 @@
 	<artifactId>velocitylimits</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>velocitylimits</name>
-	<description>Interview Task - Apply Velocity limits for Vault Customers</description>
+	<description>Harsha Gangavarapu Interview Task - Apply Velocity limits for Vault Customers accounts during fund loading.</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

@@ -94,10 +94,10 @@ public class LoadFundsService implements ILoadFundsService {
             LoadedCustomerFundsEntity loadedCustomerFundsEntity = objectMapper.convertValue(loadCustomerFund, LoadedCustomerFundsEntity.class);
             loadCustomerFundsRepository.save(loadedCustomerFundsEntity);
             loadFundsAttempt.setAccepted(true);
-            LOGGER.info("Load fund transaction with id: {} has been accepted.", loadCustomerFund.getId());
+            LOGGER.info("Load fund transaction with id: {} has been accepted. \nAttempt Output: {}", loadCustomerFund.getId(), FileWriterUtil.getJSONStringFromObj(loadFundsAttempt));
         } catch (VelocityLimitException vle) {
             loadFundsAttempt.setAccepted(false);
-            LOGGER.info("Load fund transaction with id: {} has been rejected.", loadCustomerFund.getId());
+            LOGGER.info("Load fund transaction with id: {} has been rejected. \nAttempt Output: {}", loadCustomerFund.getId(), FileWriterUtil.getJSONStringFromObj(loadFundsAttempt));
         }
         return loadFundsAttempt;
     }
