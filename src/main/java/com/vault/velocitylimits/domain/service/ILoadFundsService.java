@@ -4,11 +4,10 @@ package com.vault.velocitylimits.domain.service;
  * @author harshagangavarapu
  */
 public interface ILoadFundsService {
-
     /**
-     * This method handles the funds loading into customer accounts by reading `input.txt` which contains
-     * transaction data and stores the loaded funds into h2 DB if the transaction satisfies the `velocity limits`
-     * and creates the transaction attempts info file `output.txt`.
+     * This method handles the loading of funds into customer accounts by reading the `input.txt` file, which contains
+     * transaction data, and stores the loaded funds into an H2 database if the transaction satisfies the `velocity limits`.
+     * It also creates a file called `output.txt`, which contains information about the transaction attempts.
      */
-    public void executeFundsLoadingToAccounts();
+    void executeFundsLoadingToAccounts();
 }

@@ -77,11 +77,11 @@ public class LoadFundsService implements ILoadFundsService {
 
     /**
      * This method verifies the velocity limits for each load fund transaction.
-     * If velocity limits are satisfied then accept the transaction and save it in DB
-     * else reject the transaction attempt
+     * If the velocity limits are met, the transaction is accepted and saved in the database.
+     * If the velocity limits are not met, the transaction attempt is rejected.
      *
-     * @param loadCustomerFund
-     * @return LoadFundsAttempt
+     * @param loadCustomerFund - the load customer fund information for the transaction
+     * @return LoadFundsAttempt - the load funds attempt for the transaction
      */
     private LoadFundsAttempt verifyVelocityLimits(LoadFunds loadCustomerFund) {
         LoadFundsAttempt loadFundsAttempt = objectMapper.convertValue(loadCustomerFund, LoadFundsAttempt.class);
@@ -103,14 +103,14 @@ public class LoadFundsService implements ILoadFundsService {
     }
 
     /**
-     * This method verifies each load fund transaction satisfies the following velocity limits conditions: <p>
+     * This method verifies that each load fund transaction satisfies the following velocity limits conditions: <p>
      * 1. A maximum of $5000 per day for each customer account. <p>
-     * 2. A maximum of 3 load transaction per day for each customer account. <p>
+     * 2. A maximum of 3 load transactions per day for each customer account.
      *
-     * @param customerId
-     * @param loadTime
-     * @param loadAmount
-     * @throws VelocityLimitException
+     * @param customerId - the ID of the customer for the transaction
+     * @param loadTime   - the time of the load transaction
+     * @param loadAmount - the amount of the load transaction
+     * @throws VelocityLimitException - an exception thrown when the velocity limits are not satisfied
      */
     public void verifyCustomerMaxLoadAmountLimitPerDay(Long customerId, LocalDateTime loadTime, double loadAmount) throws VelocityLimitException {
         LocalDateTime startDate = DateTimeUtil.getStartOfDay(loadTime);
@@ -131,13 +131,13 @@ public class LoadFundsService implements ILoadFundsService {
     }
 
     /**
-     * This method verifies each load fund transaction satisfies the following velocity limits conditions: <p>
-     * 1. A maximum of $20,000 per week for each customer account. <p>
+     * This method verifies that each load fund transaction satisfies the following velocity limits conditions: <p>
+     * 1. A maximum of $20,000 per week for each customer account.
      *
-     * @param customerId
-     * @param loadTime
-     * @param loadAmount
-     * @throws VelocityLimitException
+     * @param customerId - the ID of the customer for the transaction
+     * @param loadTime   - the time of the load transaction
+     * @param loadAmount - the amount of the load transaction
+     * @throws VelocityLimitException - an exception thrown when the velocity limits are not satisfied
      */
     public void verifyCustomerNoOfLoadsInAWeek(Long customerId, LocalDateTime loadTime, double loadAmount) throws VelocityLimitException {
         LocalDateTime weekStart = DateTimeUtil.getStartOfWeek(loadTime);
@@ -155,10 +155,11 @@ public class LoadFundsService implements ILoadFundsService {
     }
 
     /**
-     * This method read the `input.txt` load funds transactions data file utilizing `FileReaderUtil` and reads each of the
-     * string data into `LoadFunds` POJO by filtering only the first occurrence of CustomerId and LoadId.
+     * This method reads the `input.txt` load funds transactions data file using the `FileReaderUtil`,
+     * and reads each of the string data into `LoadFunds` POJOs by filtering only the first occurrence
+     * of `CustomerId` and `LoadId`.
      *
-     * @return List<LoadFunds>
+     * @return List<LoadFunds> - a list of LoadFunds POJOs containing the filtered load funds transactions
      */
     private List<LoadFunds> readLoadFundTransactionData() {
         LOGGER.info("Reading and converting load funds transactions data.");

@@ -16,10 +16,10 @@ public class DateTimeUtil {
     }
 
     /**
-     * Calculates the start of the business day for the given transaction load time
+     * This method calculates the start of the business day for the given transaction load time.
      *
-     * @param loadTime
-     * @return LocalDateTime
+     * @param loadTime - the time of the load transaction
+     * @return LocalDateTime - the start of the business day for the given transaction load time
      */
     public static LocalDateTime getStartOfDay(LocalDateTime loadTime) {
         LocalDate localDate = loadTime.toLocalDate();
@@ -27,10 +27,10 @@ public class DateTimeUtil {
     }
 
     /**
-     * Calculates the end of the business day for the given transaction load time
+     * This method calculates the end of the business day for the given transaction load time.
      *
-     * @param loadTime
-     * @return LocalDateTime
+     * @param loadTime - the time of the load transaction
+     * @return LocalDateTime - the end of the business day for the given transaction load time
      */
     public static LocalDateTime getEndOfDay(LocalDateTime loadTime) {
         LocalDate localDate = loadTime.toLocalDate();
@@ -38,10 +38,10 @@ public class DateTimeUtil {
     }
 
     /**
-     * Calculates the start of the business week for the given transaction load time
+     * This method calculates the start of the business week for the given transaction load time.
      *
-     * @param loadTime
-     * @return LocalDateTime
+     * @param loadTime - the time of the load transaction
+     * @return LocalDateTime - the start of the business week for the given transaction load time
      */
     public static LocalDateTime getStartOfWeek(LocalDateTime loadTime) {
         LocalDate localDate = loadTime.toLocalDate();
@@ -50,10 +50,10 @@ public class DateTimeUtil {
     }
 
     /**
-     * Calculates the end of the business week for the given transaction load time
+     * This method calculates the end of the business week for the given transaction load time.
      *
-     * @param loadTime
-     * @return LocalDateTime
+     * @param loadTime - the time of the load transaction
+     * @return LocalDateTime - the end of the business week for the given transaction load time
      */
     public static LocalDateTime getEndOfWeek(LocalDateTime loadTime) {
         LocalDate localDate = loadTime.toLocalDate();

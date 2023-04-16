@@ -1,5 +1,6 @@
 # vault-velocitylimits
-This is an Engineering Home Task project for Vault's Senior Backend Engineer Role.
+This is a project created for Vault's Senior Backend Engineer Role as part of the Engineering Home Task. 
+The project aims to apply Velocity Limits to vault customers accounts and accept or decline fund loading transactions based on limits.
 
 ## Author
 * Harshavardhan Naidu Gangavarapu
@@ -18,7 +19,7 @@ This is an Engineering Home Task project for Vault's Senior Backend Engineer Rol
    * A maximum of 3 loads can be performed per day, regardless of amount.
 
 ### Current Task Scope
-* The Java Springboot project reads the `input.txt` file available under `resources` folder which contains the fund loading transaction's data.
+* The Java Springboot project reads the `input.txt` file available under `resources` folder, which contains the fund loading transaction's data.
 * It processes the data by applying velocity limits and leveraging in-memory h2 database.
 * The processed output is written to `output.txt` file under resources folder and also logged to standard output console.
 * We have implemented Unit test cases for the service layer business logic with the help of Mocks.
@@ -30,4 +31,5 @@ This is an Engineering Home Task project for Vault's Senior Backend Engineer Rol
 * We also store the processed data into a DB for future references.
 
 ### Steps to Run
-* Import the project into IntelliJ IDE and run `VelocityLimitsApplication.java` class.
+To run this project, follow the steps below:
+  * Import the project into IntelliJ IDE and run `VelocityLimitsApplication.java` class.

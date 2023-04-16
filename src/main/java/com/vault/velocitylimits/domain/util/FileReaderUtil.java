@@ -21,10 +21,11 @@ public class FileReaderUtil {
     }
 
     /**
-     * This method read the contents of the given fileName present in resources folder and return list of file lines.
+     * This method reads the contents of the file with the given fileName, which is expected to be located in the resources folder,
+     * and returns a list of the file's lines.
      *
-     * @param fileName
-     * @return List
+     * @param fileName - the name of the file to be read
+     * @return List<String> - a list of the file's lines
      */
     public static List<String> readCustomerLoadFundsFromInputFile(String fileName) {
         LOGGER.info("Reading load funds transactions data from input file: {}", fileName);

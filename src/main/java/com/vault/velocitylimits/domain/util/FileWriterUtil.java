@@ -28,10 +28,11 @@ public class FileWriterUtil {
     }
 
     /**
-     * This method writes the content of the list into the given fileName under resource folder.
+     * This method writes the contents of the given list to the file with the given fileName, which is expected to be located
+     * in the resources folder.
      *
-     * @param fileName
-     * @param loadFundsAttemptList
+     * @param fileName             - the name of the file to be written
+     * @param loadFundsAttemptList - the list of contents to be written to the file
      */
     public static void writeLoadFundAttemptsToFile(String fileName, List<LoadFundsAttempt> loadFundsAttemptList) {
         FileOutputStream fileOutputStream = null;
@@ -52,10 +53,10 @@ public class FileWriterUtil {
     }
 
     /**
-     * This method converts the object value into a JSON string
+     * This method converts the given object value into a JSON string.
      *
-     * @param objectValue
-     * @return String
+     * @param objectValue - the object value to be converted
+     * @return String - the resulting JSON string
      */
     public static String getJSONStringFromObj(Object objectValue) {
         try {
